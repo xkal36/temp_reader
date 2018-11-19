@@ -1,10 +1,8 @@
-# Start with a basic flask app webpage.
 from flask_socketio import SocketIO
 from flask import Flask, render_template
 from random import random
 from time import sleep
 from threading import Thread, Event
-
 
 app = Flask(__name__)
 
@@ -20,11 +18,10 @@ class RandomThread(Thread):
         super(RandomThread, self).__init__()
 
     def randomNumberGenerator(self):
-        print("Making random numbers")
         while not thread_stop_event.isSet():
-            number = round(random()*10, 3)
+            number = round(random() * 10, 3)
             print(number)
-            socketio.emit('newnumber', {'number': number}, namespace='/test')
+            socketio.emit('newnumber', {'number': number}, namespace='/app')
             sleep(self.delay)
 
     def run(self):
@@ -36,20 +33,19 @@ def index():
     return render_template('index.html')
 
 
-@socketio.on('connect', namespace='/test')
-def test_connect():
-    # need visibility of the global thread object
+@socketio.on('connect', namespace='/app')
+def app_connect():
     global thread
     print('Client connected')
 
     if not thread.isAlive():
-        print("Starting Thread")
+        print('Starting Thread')
         thread = RandomThread()
         thread.start()
 
 
-@socketio.on('disconnect', namespace='/test')
-def test_disconnect():
+@socketio.on('disconnect', namespace='/app')
+def app_disconnect():
     print('Client disconnected')
 
 
