@@ -1,21 +1,21 @@
 $(document).ready(function(){
     //connect to the socket server.
     var socket = io.connect('http://' + document.domain + ':' + location.port + '/app');
-    var numbers_received = [];
+    var results_received = [];
 
     //receive details from server
-    socket.on('newnumber', function(msg) {
-        console.log("Received number" + msg.number);
+    socket.on('new_result', function(msg) {
+        console.log("Received result" + msg.result);
         //maintain a list of ten numbers
-        if (numbers_received.length >= 10){
-            numbers_received.shift()
+        if (results_received.length >= 10){
+            results_received.shift();
         }            
-        numbers_received.push(msg.number);
-        numbers_string = '';
-        for (var i = 0; i < numbers_received.length; i++){
-            numbers_string = numbers_string + '<p>' + numbers_received[i].toString() + '</p>';
+        results_received.push(msg.result);
+        results_string = '';
+        for (var i = 0; i < results_received.length; i++){
+            results_string = results_string + '<p>' + results_received[i].toString() + '</p>';
         }
-        $('#log').html(numbers_string);
+        $('#log').html(results_string);
     });
 
 });

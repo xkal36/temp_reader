@@ -1,5 +1,6 @@
 from flask_socketio import SocketIO
 from flask import Flask, render_template
+from functools import wraps
 from random import random
 from time import sleep
 from threading import Thread, Event
@@ -11,21 +12,33 @@ socketio = SocketIO(app)
 thread = Thread()
 thread_stop_event = Event()
 
+delay = 3
 
-class RandomThread(Thread):
-    def __init__(self):
-        self.delay = 3
-        super(RandomThread, self).__init__()
 
-    def randomNumberGenerator(self):
-        while not thread_stop_event.isSet():
-            number = round(random() * 10, 3)
-            print(number)
-            socketio.emit('newnumber', {'number': number}, namespace='/app')
-            sleep(self.delay)
+def random_number():
+    return round(random() * 10, 3)
 
-    def run(self):
-        self.randomNumberGenerator()
+
+class ThreadWorker(Thread):
+    def __init__(self, f):
+        self.func_to_call = f
+        self.delay = delay
+        super(ThreadWorker, self).__init__()
+
+    def emitter(f):
+        @wraps(f)
+        def wrapper(self, *args, **kwargs):
+            while not thread_stop_event.isSet():
+                result = f(self, *args, **kwargs)
+                socketio.emit(
+                    'new_result', {'result': result}, namespace='/app'
+                )
+                sleep(self.delay)
+        return wrapper
+
+    @emitter
+    def run(self, *args, **kwargs):
+        return self.func_to_call(*args, **kwargs)
 
 
 @app.route('/')
@@ -40,7 +53,7 @@ def app_connect():
 
     if not thread.isAlive():
         print('Starting Thread')
-        thread = RandomThread()
+        thread = ThreadWorker(random_number)
         thread.start()
 
 
