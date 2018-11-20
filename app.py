@@ -28,6 +28,8 @@ class ThreadWorker(Thread):
     def run_thread(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
+            """ Decorator that runs code in thread until stop event.
+            """
             while not thread_stop_event.isSet():
                 f(*args, **kwargs)
         return wrapper
@@ -35,6 +37,8 @@ class ThreadWorker(Thread):
     def emit(f):
         @wraps(f)
         def wrapper(self, *args, **kwargs):
+            """ Decorator that emits result of wrapped function over websocket.
+            """
             socketio.emit(
                 'new_result', {
                     'result': f(self, *args, **kwargs)
