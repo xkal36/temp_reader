@@ -25,18 +25,26 @@ class ThreadWorker(Thread):
         self.delay = delay
         super(ThreadWorker, self).__init__()
 
-    def emitter(f):
+    def run_thread(f):
         @wraps(f)
-        def wrapper(self, *args, **kwargs):
+        def wrapper(*args, **kwargs):
             while not thread_stop_event.isSet():
-                result = f(self, *args, **kwargs)
-                socketio.emit(
-                    'new_result', {'result': result}, namespace='/app'
-                )
-                sleep(self.delay)
+                f(*args, **kwargs)
         return wrapper
 
-    @emitter
+    def emit(f):
+        @wraps(f)
+        def wrapper(self, *args, **kwargs):
+            socketio.emit(
+                'new_result', {
+                    'result': f(self, *args, **kwargs)
+                }, namespace='/app'
+            )
+            sleep(self.delay)
+        return wrapper
+
+    @run_thread
+    @emit
     def run(self, *args, **kwargs):
         return self.func_to_call(*args, **kwargs)
 
