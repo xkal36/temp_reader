@@ -40,6 +40,8 @@ def run_until_stopped(f):
     return wrapper
 
 
+@run_until_stopped
+@emit
 def random_number():
     return round(random() * 10, 3)
 
@@ -53,7 +55,7 @@ def index():
 def app_connect():
     print('Client connected')
 
-    thread = Thread(target=run_until_stopped(emit(random_number)))
+    thread = Thread(target=random_number)
 
     if not thread.isAlive():
         print('Starting Thread')
