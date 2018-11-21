@@ -9,48 +9,39 @@ app = Flask(__name__)
 
 socketio = SocketIO(app)
 
-thread = Thread()
-thread_stop_event = Event()
-
 delay = 3
+
+
+def emit(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        """ Decorator that emits result of wrapped function over websocket.
+        """
+        result = f(*args, **kwargs)
+        socketio.emit(
+            'new_result', {
+                'result': result
+            }, namespace='/app'
+        )
+        return result
+    return wrapper
+
+
+def run_thread(f):
+    thread_stop_event = Event()
+
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        """ Decorator that runs code in thread until stop event.
+          """
+        while not thread_stop_event.isSet():
+            sleep(delay)
+            f(*args, **kwargs)
+    return wrapper
 
 
 def random_number():
     return round(random() * 10, 3)
-
-
-class ThreadWorker(Thread):
-    def __init__(self, f):
-        self.func_to_call = f
-        self.delay = delay
-        super(ThreadWorker, self).__init__()
-
-    def run_thread(f):
-        @wraps(f)
-        def wrapper(*args, **kwargs):
-            """ Decorator that runs code in thread until stop event.
-            """
-            while not thread_stop_event.isSet():
-                f(*args, **kwargs)
-        return wrapper
-
-    def emit(f):
-        @wraps(f)
-        def wrapper(self, *args, **kwargs):
-            """ Decorator that emits result of wrapped function over websocket.
-            """
-            socketio.emit(
-                'new_result', {
-                    'result': f(self, *args, **kwargs)
-                }, namespace='/app'
-            )
-            sleep(self.delay)
-        return wrapper
-
-    @run_thread
-    @emit
-    def run(self, *args, **kwargs):
-        return self.func_to_call(*args, **kwargs)
 
 
 @app.route('/')
@@ -60,12 +51,12 @@ def index():
 
 @socketio.on('connect', namespace='/app')
 def app_connect():
-    global thread
     print('Client connected')
+
+    thread = Thread(target=run_thread(emit(random_number)))
 
     if not thread.isAlive():
         print('Starting Thread')
-        thread = ThreadWorker(random_number)
         thread.start()
 
 
