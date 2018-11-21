@@ -27,7 +27,7 @@ def emit(f):
     return wrapper
 
 
-def run_thread(f):
+def run_until_stopped(f):
     thread_stop_event = Event()
 
     @wraps(f)
@@ -53,7 +53,7 @@ def index():
 def app_connect():
     print('Client connected')
 
-    thread = Thread(target=run_thread(emit(random_number)))
+    thread = Thread(target=run_until_stopped(emit(random_number)))
 
     if not thread.isAlive():
         print('Starting Thread')
