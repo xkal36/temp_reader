@@ -33,7 +33,7 @@ def run_until_stopped(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         """ Decorator that runs code in thread until stop event.
-          """
+        """
         while not thread_stop_event.isSet():
             sleep(delay)
             f(*args, **kwargs)
