@@ -1,6 +1,6 @@
 from flask_socketio import SocketIO
 from flask import Flask, render_template
-from functools import wraps
+from functools import partial, wraps
 from random import random
 from time import sleep
 from threading import Thread, Event
@@ -42,8 +42,8 @@ def run_until_stopped(f):
 
 @run_until_stopped
 @emit
-def random_number():
-    return round(random() * 10, 3)
+def random_number(max_num, round_to_places):
+    return round(random() * max_num, round_to_places)
 
 
 @app.route('/')
@@ -55,7 +55,7 @@ def index():
 def app_connect():
     print('Client connected')
 
-    thread = Thread(target=random_number)
+    thread = Thread(target=partial(random_number, 10, 3))
 
     if not thread.isAlive():
         print('Starting Thread')
