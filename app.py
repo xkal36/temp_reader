@@ -1,9 +1,9 @@
 from flask_socketio import SocketIO
 from flask import Flask, render_template
-from functools import partial, wraps
-from random import random
+from functools import wraps
 from time import sleep
 from threading import Thread, Event
+from temp_reader import read_temp
 
 app = Flask(__name__)
 
@@ -42,8 +42,8 @@ def run_until_stopped(f):
 
 @run_until_stopped
 @emit
-def random_number(max_num, round_to_places):
-    return round(random() * max_num, round_to_places)
+def get_temperature():
+    return read_temp()
 
 
 @app.route('/')
@@ -55,7 +55,7 @@ def index():
 def app_connect():
     print('Client connected')
 
-    thread = Thread(target=partial(random_number, 10, 3))
+    thread = Thread(target=get_temperature)
 
     if not thread.isAlive():
         print('Starting Thread')
