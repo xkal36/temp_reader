@@ -5,12 +5,13 @@ from time import sleep
 from threading import Thread, Event
 from temp_reader import read_temp
 import random
+import sys
 
 app = Flask(__name__)
 
 socketio = SocketIO(app)
 
-delay = 10
+delay = sys.argv[1]
 
 
 def emit(f):
