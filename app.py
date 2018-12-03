@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 socketio = SocketIO(app)
 
-delay = sys.argv[1]
+delay = int(sys.argv[1])
 
 
 def emit(f):
