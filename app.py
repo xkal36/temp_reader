@@ -4,12 +4,13 @@ from functools import wraps
 from time import sleep
 from threading import Thread, Event
 from temp_reader import read_temp
+import random
 
 app = Flask(__name__)
 
 socketio = SocketIO(app)
 
-delay = 3
+delay = 10
 
 
 def emit(f):
@@ -42,6 +43,12 @@ def run_until_stopped(f):
 
 @run_until_stopped
 @emit
+def random_number():
+    return random.randint(1, 101)
+
+
+@run_until_stopped
+@emit
 def get_temperature():
     return read_temp()
 
@@ -55,7 +62,7 @@ def index():
 def app_connect():
     print('Client connected')
 
-    thread = Thread(target=get_temperature)
+    thread = Thread(target=random_number)
 
     if not thread.isAlive():
         print('Starting Thread')

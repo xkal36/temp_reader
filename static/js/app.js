@@ -1,21 +1,36 @@
-$(document).ready(function(){
-    //connect to the socket server.
-    var socket = io.connect('http://' + document.domain + ':' + location.port + '/app');
-    var results_received = [];
-
-    //receive details from server
-    socket.on('new_result', function(msg) {
-        console.log("Received result" + msg.result);
-        //maintain a list of ten numbers
-        if (results_received.length >= 10){
-            results_received.shift();
-        }            
-        results_received.push(msg.result);
-        results_string = '';
-        for (var i = 0; i < results_received.length; i++){
-            results_string = results_string + '<p>' + results_received[i].toString() + '</p>';
-        }
-        $('#log').html(results_string);
+function onDocumentReady() {
+    var displaynumber = document.getElementById('display');
+	var powerGauge = gauge('#power-gauge', {
+		size: 700,
+		clipWidth: 700,
+		clipHeight: 500,
+		ringWidth: 60,
+		maxValue: 100,
+		transitionMs: 4000,
     });
 
-});
+    d3.select("#power-gauge").attr("align","center");
+        
+    powerGauge.render();
+
+    var socket = io.connect('http://' + document.domain + ':' + location.port + '/app');
+    socket.on('new_result', function(msg) {
+        var result = msg.result;
+        powerGauge.update(result);
+
+        var temp = result + 'ºC';
+        if (result <= 10) {
+            displaynumber.innerHTML = "<span style='color: blue;'>" + temp + "</span>";
+        } else {
+             displaynumber.innerHTML = "<span style='color: red;'>" + temp + "</span>";
+        }
+    });
+}
+
+if (!window.isLoaded) {
+	window.addEventListener("load", function() {
+        onDocumentReady();
+	}, false);
+} else {
+	onDocumentReady();
+}
