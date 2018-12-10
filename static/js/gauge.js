@@ -34,12 +34,6 @@ var gauge = function(container, configuration) {
         return deg * Math.PI / 180;
     }
 
-    function newAngle(d) {
-        var ratio = scale(d);
-        var newAngle = config.minAngle + (ratio * range);
-        return newAngle;
-    }
-
     function configure(configuration) {
         var prop = undefined;
         for (prop in configuration) {
