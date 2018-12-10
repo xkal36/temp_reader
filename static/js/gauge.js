@@ -23,14 +23,12 @@ var gauge = function(container, configuration) {
     var range = undefined;
     var r = undefined;
     var pointerHeadLength = undefined;
-    var value = 0;
     var svg = undefined;
     var arc = undefined;
     var scale = undefined;
     var ticks = undefined;
     var tickData = undefined;
     var pointer = undefined;
-    var donut = d3.layout.pie();
 
     function deg2rad(deg) {
         return deg * Math.PI / 180;
