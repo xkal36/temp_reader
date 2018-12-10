@@ -1,23 +1,23 @@
 var gauge = function(container, configuration) {
     var that = {};
 	var config = {
-        size						: 200,
-        clipWidth					: 200,
-        clipHeight					: 110,
-        ringInset					: 20,
-        ringWidth					: 20,
-        pointerWidth				: 10,
-        pointerTailLength			: 5,
-        pointerHeadLengthPercent	: 0.9,
-        minValue					: 0,
-        maxValue					: 100,
-        minAngle					: -90,
-        maxAngle					: 90,
-        transitionMs				: 750,
-        majorTicks					: 5,
-        labelFormat					: d3.format(',g'),
-        labelInset					: 10,
-        arcColorFn					: d3.interpolateHsl(d3.rgb('#FFFF00'), d3.rgb('#FF0000'))
+        size                        : 200,
+        clipWidth                   : 200,
+        clipHeight                  : 110,
+        ringInset                   : 20,
+        ringWidth                   : 20,
+        pointerWidth                : 10,
+        pointerTailLength           : 5,
+        pointerHeadLengthPercent    : 0.9,
+        minValue                    : 0,
+        maxValue                    : 100,
+        minAngle                    : -90,
+        maxAngle                    : 90,
+        transitionMs                : 750,
+        majorTicks                  : 5,
+        labelFormat                 : d3.format(',g'),
+        labelInset                  : 10,
+        arcColorFn                  : d3.interpolateHsl(d3.rgb('#FFFF00'), d3.rgb('#FF0000'))
     };
 
     var range = undefined;
