@@ -1,6 +1,6 @@
 var gauge = function(container, configuration) {
     var that = {};
-	var config = {
+    var config = {
         size                        : 200,
         clipWidth                   : 200,
         clipHeight                  : 110,
